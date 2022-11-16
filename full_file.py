@@ -92,7 +92,7 @@ def returnDict(url):
 			paragraphs_text.append(par.text)
 			str_is_valid(paragraphs_text)
 	this_dict = {
-		"Title": str(title),
+		"Title": title.text,
 		"paragraphs": paragraphs_text
 	}
 	return this_dict
@@ -103,7 +103,7 @@ def returnDict(url):
 
 
 def main():
-	urls = scrape_laNacion("https://www.lanacion.com.ar/","randfile.txt")
+	urls = scrape_laNacion("https://www.lanacion.com.ar","randfile.txt")
 
 	# are_links_valid("randfile.txt")
 	newArticle = returnDict(urls[0])
