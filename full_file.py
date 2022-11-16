@@ -24,6 +24,8 @@ def is_string_an_url(url_string: str) -> bool:
     return result
 
 def scrape_laNacion(url,fileName):
+	if url[-1] == '/':
+		url = url.rstrip('/')
 
 	
 	grab = requests.get(url)
@@ -91,8 +93,11 @@ def returnDict(url):
 		if par.text not in not_in and par.text != title.text:
 			paragraphs_text.append(par.text)
 			str_is_valid(paragraphs_text)
+
+	subhead = soup.find('h2', {'class':"com-subhead --bajada --m-xs"})
 	this_dict = {
 		"Title": title.text,
+		"subhead":subhead.text,
 		"paragraphs": paragraphs_text
 	}
 	return this_dict
@@ -103,12 +108,14 @@ def returnDict(url):
 
 
 def main():
-	urls = scrape_laNacion("https://www.lanacion.com.ar","randfile.txt")
+	urls = scrape_laNacion("https://www.lanacion.com.ar/","randfile.txt")
 
 	# are_links_valid("randfile.txt")
 	newArticle = returnDict(urls[0])
 	print(f'Título: {newArticle["Title"]}')
 	print("\n\n")
+	print(f'subhead: {newArticle["subhead"]}')
+	print('\n\n')
 	for par in newArticle["paragraphs"]:
 		print(f'Párrafo: {par}')
 		print("\n")
