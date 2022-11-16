@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import validators
 from validators import ValidationFailure
+import re
+
 
 def str_is_valid(newStr):
 	assert newStr != ""
@@ -21,9 +23,9 @@ def is_string_an_url(url_string: str) -> bool:
 
     return result
 
-def scrape_laNacion(fileName):
+def scrape_laNacion(url,fileName):
 
-	url = 'https://www.lanacion.com.ar'
+	
 	grab = requests.get(url)
 	soup = BeautifulSoup(grab.text, 'html.parser')
 
@@ -33,14 +35,17 @@ def scrape_laNacion(fileName):
 	# traverse paragraphs from soup
 	for link in soup.find_all("a"):
 		href = link.get('href')
-		if '.com' not in href and '.' not in href and 'tema' not in href and href.count('/') > 1 and link.get(href) not in urls :
+		full_url = url + href
+		if '.com' not in href and '.' not in href and 'tema' not in href and href.count('/') > 1 and full_url not in urls :
 			data = link.get('href')
 			full_url = url + data
 			urls.append(full_url)
 			str_is_valid(full_url)
-			f.write(full_url)
-			f.write("\n")
-
+			
+	urls = [*set(urls)]
+	for url in urls:
+		f.write(url)
+		f.write("\n")
 	f.close()
 	return urls
 
@@ -55,7 +60,7 @@ def are_links_valid(txtfile):
 
 
 
-def returnObj(url):
+def returnDict(url):
 	grab = requests.get(url)
 	soup = BeautifulSoup(grab.text, 'html.parser')
 
@@ -86,24 +91,28 @@ def returnObj(url):
 		if par.text not in not_in and par.text != title.text:
 			paragraphs_text.append(par.text)
 			str_is_valid(paragraphs_text)
+	this_dict = {
+		"Title": str(title),
+		"paragraphs": paragraphs_text
+	}
+	return this_dict
 			
 
-	articleObj = Article(title.text, paragraphs_text)
-	str_is_valid(title.text)
-
-	return articleObj
+	
+	
 
 
 def main():
-	urls = scrape_laNacion("randfile.txt")
+	urls = scrape_laNacion("https://www.lanacion.com.ar/","randfile.txt")
 
 	# are_links_valid("randfile.txt")
-	newArticle = returnObj(urls[0])
-	print(f'Título: {newArticle.title}')
+	newArticle = returnDict(urls[0])
+	print(f'Título: {newArticle["Title"]}')
 	print("\n\n")
-	for par in newArticle.paragraphs:
+	for par in newArticle["paragraphs"]:
 		print(f'Párrafo: {par}')
 		print("\n")
+	
 
 
 
