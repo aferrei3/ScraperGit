@@ -23,7 +23,7 @@ def is_string_an_url(url_string: str) -> bool:
 
 def scrape_laNacion(fileName):
 
-	url = 'https://www.lanacion.com.ar/'
+	url = 'https://www.lanacion.com.ar'
 	grab = requests.get(url)
 	soup = BeautifulSoup(grab.text, 'html.parser')
 
@@ -33,7 +33,7 @@ def scrape_laNacion(fileName):
 	# traverse paragraphs from soup
 	for link in soup.find_all("a"):
 		href = link.get('href')
-		if '.com' not in href and '.' not in href and 'tema' not in href and href.count('/') > 1 and href not in urls :
+		if '.com' not in href and '.' not in href and 'tema' not in href and href.count('/') > 1 and link.get(href) not in urls :
 			data = link.get('href')
 			full_url = url + data
 			urls.append(full_url)
